@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trendy Threads - Online Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+        }
+
+        header {
+            background: #333;
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav h1 {
+            font-size: 1.5rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 2rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .hero {
+            background: url('https://source.unsplash.com/random/1200x400/?fashion') no-repeat center/cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .featured, .catalog {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-card h3 {
+            margin: 0.5rem 0;
+        }
+
+        .product-card button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .cart {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+            }
+
+            nav ul li {
+                margin: 0 1rem;
+            }
+
+            .hero {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>Trendy Threads</h1>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#catalog">Catalog</a></li>
+                <li><a href="#cart">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div>
+            <h1>Welcome to Trendy Threads</h1>
+            <p>Discover the latest in shoes and fashion</p>
+        </div>
+    </section>
+
+    <section class="featured">
+        <h2>Featured Products</h2>
+        <div class="product-grid" id="featured-products">
+            <!-- Products will be added by JavaScript -->
+        </div>
+    </section>
+
+    <section id="catalog" class="catalog">
+        <h2>Product Catalog</h2>
+        <div class="product-grid" id="all-products">
+            <!-- Products will be added by JavaScript -->
+        </div>
+    </section>
+
+    <section id="cart" class="cart">
+        <h2>Shopping Cart</h2>
+        <div id="cart-items"></div>
+        <h3>Total: $<span id="cart-total">0</span></h3>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Trendy Threads. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const products = [
+            { id: 1, name: "Running Shoes", price: 79.99, image: "https://source.unsplash.com/random/300x200/?sneakers" },
+            { id: 2, name: "Leather Jacket", price: 129.99, image: "https://source.unsplash.com/random/300x200/?jacket" },
+            { id: 3, name: "Casual Sneakers", price: 59.99, image: "https://source.unsplash.com/random/300x200/?shoes" },
+            { id: 4, name: "Denim Jeans", price: 49.99, image: "https://source.unsplash.com/random/300x200/?jeans" },
+            { id: 5, name: "Formal Shirt", price: 39.99, image: "https://source.unsplash.com/random/300x200/?shirt" },
+            { id: 6, name: "Sports Cap", price: 19.99, image: "https://source.unsplash.com/random/300x200/?cap" }
+        ];
+
+        let cart = [];
+
+        function displayProducts() {
+            const featuredContainer = document.getElementById('featured-products');
+            const catalogContainer = document.getElementById('all-products');
+
+            // Display first 3 products as featured
+            products.slice(0, 3).forEach(product => {
+                const productCard = `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>$${product.price}</p>
+                        <button onclick="addToCart(${product.id})">Add to Cart</button>
+                    </div>
+                `;
+                featuredContainer.innerHTML += productCard;
+            });
+
+            // Display all products in catalog
+            products.forEach(product => {
+                const productCard = `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>$${product.price}</p>
+                        <button onclick="addToCart(${product.id})">Add to Cart</button>
+                    </div>
+                `;
+                catalogContainer.innerHTML += productCard;
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            cart.push(product);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+
+            cartItems.innerHTML = '';
+            cart.forEach((item, index) => {
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name}</span>
+                        <span>$${item.price}</span>
+                    </div>
+                `;
+            });
+
+            cartCount.textContent = cart.length;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            cartTotal.textContent = total.toFixed(2);
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Initialize products
+        displayProducts();
+    </script>
+</body>
+</html>
