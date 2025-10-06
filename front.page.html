@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trendy Threads - Online Store</title>
+    <title>Kish Collection - Online Store</title>
     <style>
         * {
             margin: 0;
@@ -41,6 +41,7 @@
         nav ul {
             display: flex;
             list-style: none;
+            align-items: center;
         }
 
         nav ul li {
@@ -50,6 +51,16 @@
         nav ul li a {
             color: white;
             text-decoration: none;
+        }
+
+        .search-container {
+            margin-left: 2rem;
+        }
+
+        .search-container input {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
         }
 
         .hero {
@@ -129,10 +140,16 @@
 
             nav ul {
                 margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             nav ul li {
                 margin: 0 1rem;
+            }
+
+            .search-container {
+                margin: 1rem 0;
             }
 
             .hero {
@@ -144,18 +161,21 @@
 <body>
     <header>
         <nav>
-            <h1>Trendy Threads</h1>
+            <h1>Kish Collection</h1>
             <ul>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#catalog">Catalog</a></li>
                 <li><a href="#cart">Cart (<span id="cart-count">0</span>)</a></li>
+                <li class="search-container">
+                    <input type="text" id="search-input" placeholder="Search products..." oninput="searchProducts()">
+                </li>
             </ul>
         </nav>
     </header>
 
     <section id="home" class="hero">
         <div>
-            <h1>Welcome to Trendy Threads</h1>
+            <h1>Welcome to Kish Collection</h1>
             <p>Discover the latest in shoes and fashion</p>
         </div>
     </section>
@@ -181,26 +201,29 @@
     </section>
 
     <footer>
-        <p>&copy; 2025 Trendy Threads. All rights reserved.</p>
+        <p>&copy; 2025 Kish Collection. All rights reserved.</p>
     </footer>
 
     <script>
         const products = [
-            { id: 1, name: "Running Shoes", price: 79.99, image: "https://source.unsplash.com/random/300x200/?sneakers" },
-            { id: 2, name: "Leather Jacket", price: 129.99, image: "https://source.unsplash.com/random/300x200/?jacket" },
-            { id: 3, name: "Casual Sneakers", price: 59.99, image: "https://source.unsplash.com/random/300x200/?shoes" },
-            { id: 4, name: "Denim Jeans", price: 49.99, image: "https://source.unsplash.com/random/300x200/?jeans" },
-            { id: 5, name: "Formal Shirt", price: 39.99, image: "https://source.unsplash.com/random/300x200/?shirt" },
-            { id: 6, name: "Sports Cap", price: 19.99, image: "https://source.unsplash.com/random/300x200/?cap" }
+            { id: 1, name: "Running Shoes", price: 9.99, image: "https://source.unsplash.com/random/300x200/?sneakers" },
+            { id: 2, name: "Leather Jacket", price: 29.99, image: "https://source.unsplash.com/random/300x200/?jacket" },
+            { id: 3, name: "Casual Sneakers", price: 9.99, image: "https://source.unsplash.com/random/300x200/?shoes" },
+            { id: 4, name: "Denim Jeans", price: 9.99, image: "https://source.unsplash.com/random/300x200/?jeans" },
+            { id: 5, name: "Formal Shirt", price: 9.99, image: "https://source.unsplash.com/random/300x200/?shirt" },
+            { id: 6, name: "Sports Cap", price: 9.99, image: "https://source.unsplash.com/random/300x200/?cap" }
         ];
 
         let cart = [];
 
-        function displayProducts() {
+        function displayProducts(filteredProducts = products) {
             const featuredContainer = document.getElementById('featured-products');
             const catalogContainer = document.getElementById('all-products');
 
-            // Display first 3 products as featured
+            featuredContainer.innerHTML = '';
+            catalogContainer.innerHTML = '';
+
+            // Display first 3 products as featured (unfiltered)
             products.slice(0, 3).forEach(product => {
                 const productCard = `
                     <div class="product-card">
@@ -213,8 +236,8 @@
                 featuredContainer.innerHTML += productCard;
             });
 
-            // Display all products in catalog
-            products.forEach(product => {
+            // Display filtered products in catalog
+            filteredProducts.forEach(product => {
                 const productCard = `
                     <div class="product-card">
                         <img src="${product.image}" alt="${product.name}">
@@ -251,6 +274,14 @@
             cartCount.textContent = cart.length;
             const total = cart.reduce((sum, item) => sum + item.price, 0);
             cartTotal.textContent = total.toFixed(2);
+        }
+
+        function searchProducts() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const filteredProducts = products.filter(product =>
+                product.name.toLowerCase().includes(searchInput)
+            );
+            displayProducts(filteredProducts);
         }
 
         // Smooth scrolling for navigation
